@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horizontal vs Vertical Circular Motion</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EADFC9; 
+    --paper:#F7F4EC; 
+    --card:#FFFFFF; 
+    --text:#1E1D19; 
+    --text2:#6E6C62;
+    --border:#E7E2D4; 
+    --grid-line:rgba(180, 175, 160, 0.25);
+    --margin-line:rgba(215, 90, 75, 0.4);
+    --shadow:0 4px 20px rgba(30,29,25,.12), 0 1px 3px rgba(30,29,25,.08);
+    --v:#0B6E55; --ac:#4A3FA0; --at:#B23A2E; --T:#33322D; --mg:#A6740E;
+    --green-bg:#E7F0DA; --coral-bg:#F7E4DD; --eyebrow:#8A6A2F;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ 
+      --bg:#0F0E0A;
+      --paper:#1C1A14; 
+      --card:#24221A; 
+      --text:#F0EEE4; 
+      --text2:#A8A599; 
+      --border:#39362A;
+      --grid-line:rgba(80, 75, 60, 0.35);
+      --margin-line:rgba(215, 90, 75, 0.3);
+      --shadow:0 4px 24px rgba(0,0,0,.5);
+      --green-bg:#212C16; --coral-bg:#2E1E16; --eyebrow:#D6B36A; 
+    }
+  }
+  *{box-sizing:border-box}
+  
+  body{
+    margin:0; padding:40px 16px; 
+    background-color: var(--bg);
+    color:var(--text);
+    font-family:'Inter',-apple-system,sans-serif; 
+    -webkit-font-smoothing:antialiased;
+  }
+
+  .notebook-page {
+    max-width: 960px;
+    margin: 0 auto;
+    position: relative;
+    background-color: var(--paper);
+    border-radius: 6px 16px 16px 6px;
+    box-shadow: var(--shadow);
+    padding: 48px 36px 48px 72px;
+    
+    background-image: 
+      linear-gradient(90deg, transparent 55px, var(--margin-line) 55px, var(--margin-line) 57px, transparent 57px),
+      linear-gradient(var(--grid-line) 1px, transparent 1px),
+      linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+    background-size: 100% 100%, 24px 24px, 24px 24px;
+  }
+
+  .binder-holes {
+    position: absolute;
+    left: 18px;
+    top: 36px;
+    bottom: 36px;
+    width: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    pointer-events: none;
+    z-index: 10;
+  }
+
+  .hole {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background-color: var(--bg);
+    box-shadow: inset 1px 1px 3px rgba(0,0,0,0.4);
+  }
+
+  .wrap{max-width:820px;margin:0 auto}
+  .eyebrow{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--eyebrow);margin:0 0 10px}
+  h1{font-family:'Fraunces',serif;font-weight:600;font-size:34px;line-height:1.15;margin:0 0 14px;letter-spacing:-.01em}
+  h2{font-family:'Fraunces',serif;font-weight:600;font-size:22px;margin:48px 0 10px;padding-top:32px;border-top:1px solid var(--border)}
+  h2:first-of-type{border-top:none;padding-top:0}
+  h3{font-size:13px;font-weight:600;text-align:center;margin:0 0 12px;letter-spacing:.02em;color:var(--text)}
+  p.lede{color:var(--text2);font-size:16px;line-height:1.65;margin:0 0 28px;max-width:640px}
+  p.body{color:var(--text2);font-size:14.5px;line-height:1.7;margin:0 0 16px;max-width:680px}
+  
+  .controls-bar{
+    display:flex; flex-wrap:wrap; align-items:center; gap:16px;
+    background:var(--card); border:1px solid var(--border); border-radius:12px;
+    padding:14px 20px; margin-bottom:28px; box-shadow:0 2px 8px rgba(0,0,0,0.04);
+  }
+  .controls-bar label{font-size:13px; font-weight:600; color:var(--text2); display:flex; align-items:center; gap:10px}
+  .controls-bar input[type=range]{accent-color:var(--ac); cursor:pointer}
+  .btn{
+    background:var(--paper); border:1px solid var(--border); color:var(--text);
+    padding:6px 14px; border-radius:6px; font-size:13px; font-weight:500; cursor:pointer;
+    transition:all 0.15s ease;
+  }
+  .btn:hover{background:var(--border)}
+  
+  ul.points{list-style:none;padding:0;margin:0 0 22px;max-width:680px}
+  ul.points li{position:relative;padding-left:24px;margin-bottom:11px;font-size:14.5px;color:var(--text2);line-height:1.6}
+  ul.points li::before{content:'';position:absolute;left:0;top:8px;width:7px;height:7px;border-radius:50%;background:var(--ac)}
+  ul.points li b{color:var(--text);font-weight:600}
+  
+  .panels{display:flex;flex-wrap:wrap;gap:20px;justify-content:center}
+  .card{
+    flex:1;min-width:280px;max-width:340px;background:var(--card);
+    border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 2px 8px rgba(0,0,0,0.04);
+  }
+  .legend{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;font-size:13px;color:var(--text2);margin-top:10px}
+  .legend span{display:inline-flex;align-items:center;gap:4px}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}
+  .swatch{width:13px;height:9px;border-radius:2px;display:inline-block;flex-shrink:0}
+  .readout{text-align:center;font-size:13.5px;margin-top:10px;color:var(--text2)}
+  .readout b{color:var(--text);font-weight:600}
+  .caption{font-size:12.5px;color:var(--text2);line-height:1.6;margin-top:12px;text-align:center}
+  
+  sub {
+    font-size: 0.75em;
+    line-height: 0;
+    position: relative;
+    vertical-align: baseline;
+    bottom: -0.2em;
+    margin-left: 0px;
+  }
+  
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:14px;background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--border)}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--border)}
+  th{color:var(--eyebrow);font-weight:600;font-size:12px;letter-spacing:.04em;text-transform:uppercase}
+  footer{text-align:center;font-size:12px;color:var(--text2);margin-top:48px}
+</style>
+</head>
+<body>
+
+<div class="notebook-page">
+
+  <div class="binder-holes">
+    <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    <div class="hole"></div>
+  </div>
+
+  <div class="wrap">
+    <div class="eyebrow">Physics Notebook Visualizer</div>
+    <h1>Horizontal vs Vertical Circles</h1>
+    <p class="lede">Two fundamental modes of circular motion: a horizontal conical pendulum operating at zero tangential acceleration, alongside a vertical circular loop governed by gravity and conservation of energy.</p>
+
+    <div class="controls-bar">
+      <button class="btn" id="toggleBtn" onclick="togglePlay()">Pause</button>
+      <button class="btn" onclick="resetAnim()">Reset</button>
+      <label>
+        Circular Motion Speed:
+        <input type="range" id="speedSlider" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSpeed(this.value)">
+        <span id="speedVal">1.0x</span>
+      </label>
+    </div>
+
+    <h2>1. Horizontal Circular Motion (Conical Pendulum)</h2>
+    <ul class="points">
+      <li><b>Fixed Angle & Radius (&Sigma;F<sub>y</sub> = 0).</b> Vertical forces perfectly balance (<i>T</i> cos&theta; = <i>mg</i>), maintaining a constant plane of motion.</li>
+      <li><b>Pure Horizontal Centripetal Force.</b> <i>T</i> sin&theta; provides <i>a</i><sub>c</sub> straight to the center. Speed is constant, so tangential acceleration <i>a</i><sub>t</sub> = 0.</li>
+    </ul>
+    <div class="panels">
+      <div class="card">
+        <h3>Motion View</h3>
+        <svg width="100%" viewBox="0 0 300 300">
+          <defs>
+            <marker id="mkVL" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="var(--v)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+            <marker id="mkAcL" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="var(--ac)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+          </defs>
+          <line x1="150" y1="40" x2="150" y2="170" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 3"/>
+          <ellipse id="orbitPath" cx="150" cy="170" rx="100" ry="28" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"/>
+          <line id="stringRefL" x1="150" y1="40" x2="250" y2="170" stroke="var(--text2)" stroke-width="1" stroke-dasharray="2 3" opacity="0.5"/>
+          <path id="angleArcL" d="M150,64 A24,24 0 0,1 171,52.5" fill="none" stroke="var(--text2)" stroke-width="1"/>
+          <text id="angleTextL" x="164" y="70" font-size="13" fill="var(--text2)">&theta;</text>
+          <circle cx="150" cy="40" r="4" fill="var(--text2)"/>
+          <line id="stringL" x1="150" y1="40" x2="250" y2="170" stroke="var(--text2)" stroke-width="1.4"/>
+          <line id="Lac" x1="250" y1="170" x2="218" y2="170" stroke="var(--ac)" stroke-width="2" marker-end="url(#mkAcL)"/>
+          <line id="Lv" x1="250" y1="170" x2="250" y2="202" stroke="var(--v)" stroke-width="2" marker-end="url(#mkVL)"/>
+          <circle id="ballL" cx="250" cy="170" r="7" fill="var(--card)" stroke="var(--ac)" stroke-width="2"/>
+        </svg>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--v)"></i>Velocity (v)</span>
+          <span><i class="dot" style="background:var(--ac)"></i>Centripetal (a<sub>c</sub>)</span>
+        </div>
+        <div class="readout">a<sub>t</sub> = <b>0.00</b> &times; g &nbsp;|&nbsp; &theta; = <b id="thetaReadout">37&deg;</b></div>
+      </div>
+      <div class="card">
+        <h3>Force View</h3>
+        <svg width="100%" viewBox="0 0 300 280">
+          <defs>
+            <marker id="mkMgF" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="var(--mg)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+            <marker id="mkTF" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="var(--T)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+            <marker id="mkAcF" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="var(--ac)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+            <marker id="mkNeuF" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="var(--text2)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+          </defs>
+          <line x1="140" y1="40" x2="140" y2="210" stroke="var(--border)" stroke-width="1" stroke-dasharray="3 3"/>
+          <path d="M140,64 A24,24 0 0,1 153.8,59.7" fill="none" stroke="var(--text2)" stroke-width="1"/>
+          <text x="146" y="54" font-size="13" fill="var(--text2)">&theta;</text>
+          <circle cx="140" cy="40" r="4" fill="var(--text2)"/>
+          <line x1="140" y1="40" x2="237.5" y2="179.3" stroke="var(--text2)" stroke-width="1.4"/>
+          <circle cx="237.5" cy="179.3" r="7" fill="var(--card)" stroke="var(--T)" stroke-width="2"/>
+          <line x1="237.5" y1="179.3" x2="237.5" y2="224.3" stroke="var(--mg)" stroke-width="2" marker-end="url(#mkMgF)"/>
+          <text x="243" y="216" font-size="13" fill="var(--mg)">mg</text>
+          <line x1="237.5" y1="179.3" x2="206" y2="134.2" stroke="var(--T)" stroke-width="2" marker-end="url(#mkTF)"/>
+          <text x="192" y="128" font-size="13" fill="var(--T)">T</text>
+          <line x1="237.5" y1="179.3" x2="140" y2="179.3" stroke="var(--ac)" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#mkAcF)"/>
+          <text x="168" y="194" font-size="12" fill="var(--ac)">T sin&theta;</text>
+          <line x1="245.5" y1="179.3" x2="245.5" y2="134.3" stroke="var(--text2)" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#mkNeuF)"/>
+          <text x="250" y="150" font-size="12" fill="var(--text2)">T cos&theta;</text>
+        </svg>
+        <div class="caption"><i>T</i> sin&theta; supplies centripetal acceleration (<i>a</i><sub>c</sub>). <i>T</i> cos&theta; balances gravity (<i>mg</i>), keeping height constant.</div>
+      </div>
+    </div>
+
+    <h2>2. Vertical Circular Motion</h2>
+    <p class="body">In a vertical loop, gravity acts downward throughout the path. Gravity accelerates the object along the descending arc (green) and decelerates it along the ascending arc (rust), changing both speed and tension dynamically.</p>
+    <div class="panels">
+      <div class="card">
+        <h3>Motion View</h3>
+        <svg width="100%" viewBox="0 0 300 300">
+          <defs>
+            <marker id="mkVR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="var(--v)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+            <marker id="mkAcR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="var(--ac)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+            <marker id="mkAtR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="var(--at)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+          </defs>
+          <path d="M150,65 A95,95 0 0,0 150,255 L150,160 Z" fill="var(--coral-bg)"/>
+          <path d="M150,65 A95,95 0 0,1 150,255 L150,160 Z" fill="var(--green-bg)"/>
+          <circle cx="150" cy="160" r="95" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"/>
+          <circle cx="150" cy="160" r="4" fill="var(--text2)"/>
+          <line id="stringR" x1="150" y1="160" x2="178.07" y2="69.25" stroke="var(--text2)" stroke-width="1.4"/>
+          <line id="Rac" x1="178.07" y1="69.25" x2="168.61" y2="99.82" stroke="var(--ac)" stroke-width="2" marker-end="url(#mkAcR)"/>
+          <line id="Rat" x1="178.07" y1="69.25" x2="187.10" y2="72.04" stroke="var(--at)" stroke-width="2" marker-end="url(#mkAtR)"/>
+          <line id="Rv" x1="178.07" y1="69.25" x2="208.64" y2="78.71" stroke="var(--v)" stroke-width="2" marker-end="url(#mkVR)"/>
+          <circle id="ballR" cx="178.07" cy="69.25" r="7" fill="var(--card)" stroke="var(--ac)" stroke-width="2"/>
+        </svg>
+        <div class="legend">
+          <span><i class="swatch" style="background:var(--coral-bg);border:1px solid var(--border)"></i>Slows Down</span>
+          <span><i class="swatch" style="background:var(--green-bg);border:1px solid var(--border)"></i>Speeds Up</span>
+        </div>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--v)"></i>v</span>
+          <span><i class="dot" style="background:var(--ac)"></i>a<sub>c</sub></span>
+          <span><i class="dot" style="background:var(--at)"></i>a<sub>t</sub></span>
+        </div>
+        <div class="readout">a<sub>t</sub> = <b id="atReadout">0.30</b> &times; g</div>
+      </div>
+      <div class="card">
+        <h3>Force View</h3>
+        <svg width="100%" viewBox="0 0 300 300">
+          <defs>
+            <marker id="mkMgV2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="var(--mg)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+            <marker id="mkTV2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="var(--T)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+            <marker id="mkRadV2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="var(--ac)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+            <marker id="mkTanV2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M2 1L8 5L2 9" fill="none" stroke="var(--at)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker>
+          </defs>
+          <circle cx="150" cy="160" r="95" fill="none" stroke="var(--border)" stroke-width="1" stroke-dasharray="4 4"/>
+          <circle cx="150" cy="160" r="4" fill="var(--text2)"/>
+          <line id="stringR2" x1="150" y1="160" x2="178.07" y2="69.25" stroke="var(--text2)" stroke-width="1.4"/>
+          <line id="V2mg" x1="178.07" y1="69.25" x2="178.07" y2="101.25" stroke="var(--mg)" stroke-width="2" marker-end="url(#mkMgV2)"/>
+          <line id="V2T" x1="178.07" y1="69.25" x2="168.61" y2="99.82" stroke="var(--T)" stroke-width="2" marker-end="url(#mkTV2)"/>
+          <line id="V2rad" x1="178.07" y1="69.25" x2="169.04" y2="98.46" stroke="var(--ac)" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#mkRadV2)"/>
+          <line id="V2tan" x1="178.07" y1="69.25" x2="187.10" y2="72.04" stroke="var(--at)" stroke-width="1.6" stroke-dasharray="4 3" marker-end="url(#mkTanV2)"/>
+          <circle id="ballR2" cx="178.07" cy="69.25" r="7" fill="var(--card)" stroke="var(--T)" stroke-width="2"/>
+        </svg>
+        <div class="legend">
+          <span><i class="dot" style="background:var(--T)"></i>T</span>
+          <span><i class="dot" style="background:var(--mg)"></i>mg</span>
+          <span><i class="dot" style="background:var(--ac)"></i>Radial (<i>T</i> - <i>mg</i> cos&theta;)</span>
+          <span><i class="dot" style="background:var(--at)"></i>Tangential (<i>mg</i> sin&theta;)</span>
+        </div>
+        <div class="caption">Gravity component along path (<i>mg</i> sin&theta;) drives <i>a</i><sub>t</sub>. Radial component combines with <i>T</i> to supply centripetal force (<i>a</i><sub>c</sub>).</div>
+      </div>
+    </div>
+
+    <h2>Summary Comparison</h2>
+    <table>
+      <tr><th>Property</th><th>Horizontal Circle</th><th>Vertical Circle</th></tr>
+      <tr><td>Plane of Motion</td><td>Flat, horizontal (<i>z</i> = const)</td><td>Vertical (<i>y</i> varies)</td></tr>
+      <tr><td>String Angle (&theta;)</td><td>Constant for fixed speed</td><td>Continuously changing</td></tr>
+      <tr><td>Centripetal Acceleration</td><td>Purely horizontal, steady magnitude</td><td>continuously rotates direction, magnitude varies with speed</td></tr>
+      <tr><td>Tangential Acceleration (<i>a</i><sub>t</sub>)</td><td>Zero at all points (<i>a</i><sub>t</sub> = 0)</td><td>Nonzero (<i>a</i><sub>t</sub> = <i>g</i> sin&theta;)</td></tr>
+      <tr><td>Speed (<i>v</i>)</td><td>Constant (Uniform)</td><td>Non-uniform (Fastest at bottom, slowest at top)</td></tr>
+      <tr><td>Vertical Force Balance</td><td>&Sigma;F<sub>y</sub> = 0 &rArr; <i>T</i> cos&theta; = <i>mg</i></td><td>No vertical balance (&Sigma;F<sub>y</sub> = <i>m</i><i>a</i><sub>y</sub>)</td></tr>
+    </table>
+
+    <footer>Interactive Notebook Visualizer</footer>
+  </div>
+</div>
+
+<script>
+function setLine(id,x1,y1,x2,y2){
+  var el=document.getElementById(id);
+  if(el){ el.setAttribute('x1',x1);el.setAttribute('y1',y1);el.setAttribute('x2',x2);el.setAttribute('y2',y2); }
+}
+
+var phi=0, theta=0.3;
+var speedMultiplier = 1.0;
+var isRunning = true;
+var animFrameId = null;
+var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function togglePlay(){
+  isRunning = !isRunning;
+  document.getElementById('toggleBtn').textContent = isRunning ? 'Pause' : 'Play';
+  if(isRunning && !reduced) loop();
+}
+
+function resetAnim(){
+  phi = 0; theta = 0.3;
+  frameHorizontal(); frameVertical();
+}
+
+function updateSpeed(val){
+  speedMultiplier = parseFloat(val);
+  document.getElementById('speedVal').textContent = speedMultiplier.toFixed(1) + 'x';
+  var baseThetaDeg = 37;
+  var currentThetaDeg = Math.min(75, Math.max(15, Math.round(baseThetaDeg * speedMultiplier)));
+  document.getElementById('thetaReadout').textContent = currentThetaDeg + '°';
+}
+
+function frameHorizontal(){
+  var cx=150, cy=170;
+  var rx = 100 * (0.6 + 0.4 * speedMultiplier);
+  var ry = 28 * (0.6 + 0.4 * speedMultiplier);
+  
+  var path = document.getElementById('orbitPath');
+  if(path){ path.setAttribute('rx', rx); path.setAttribute('ry', ry); }
+
+  var bx=cx+rx*Math.cos(phi), by=cy+ry*Math.sin(phi);
+  var tx=-rx*Math.sin(phi), ty=ry*Math.cos(phi); var tl=Math.hypot(tx,ty); tx/=tl; ty/=tl;
+  var rxu=cx-bx, ryu=cy-by; var rl=Math.hypot(rxu,ryu); rxu/=rl; ryu/=rl;
+
+  setLine('Lv', bx,by, bx+tx*32, by+ty*32);
+  setLine('Lac', bx,by, bx+rxu*32, by+ryu*32);
+  document.getElementById('ballL').setAttribute('cx',bx);
+  document.getElementById('ballL').setAttribute('cy',by);
+  document.getElementById('stringL').setAttribute('x2',bx);
+  document.getElementById('stringL').setAttribute('y2',by);
+}
+
+function frameVertical(){
+  var cx=150, cy=160, r=95;
+  var bx=cx+r*Math.sin(theta), by=cy-r*Math.cos(theta);
+  var tx=Math.cos(theta), ty=Math.sin(theta);
+  
+  // Unit vectors toward the center (rix, riy)
+  var rix=-Math.sin(theta), riy=Math.cos(theta);
+  
+  var atm=Math.sin(theta);
+  
+  // Dynamic calculation for centripetal magnitude (v^2/r increases toward bottom)
+  var netRadialMag = 25 + 15 * Math.cos(theta); 
+
+  setLine('Rv', bx,by, bx+tx*32, by+ty*32);
+  setLine('Rac', bx,by, bx+rix*32, by+riy*32);
+  setLine('Rat', bx,by, bx+tx*atm*32, by+ty*atm*32);
+  document.getElementById('ballR').setAttribute('cx',bx);
+  document.getElementById('ballR').setAttribute('cy',by);
+  document.getElementById('stringR').setAttribute('x2',bx);
+  document.getElementById('stringR').setAttribute('y2',by);
+  document.getElementById('atReadout').textContent = Math.abs(atm).toFixed(2);
+
+  setLine('V2mg', bx,by, bx+0*32, by+1*32);
+  setLine('V2T', bx,by, bx+rix*(netRadialMag + 32*Math.cos(theta)), by+riy*(netRadialMag + 32*Math.cos(theta)));
+  
+  // FIXED: Net radial force vector ALWAYS points INWARD toward the center pivot (rix, riy)
+  setLine('V2rad', bx, by, bx + rix * netRadialMag, by + riy * netRadialMag);
+  
+  setLine('V2tan', bx,by, bx+tx*atm*32, by+ty*atm*32);
+  document.getElementById('ballR2').setAttribute('cx',bx);
+  document.getElementById('ballR2').setAttribute('cy',by);
+  document.getElementById('stringR2').setAttribute('x2',bx);
+  document.getElementById('stringR2').setAttribute('y2',by);
+}
+
+function loop(){
+  if(!isRunning) return;
+  phi += 0.008 * speedMultiplier;
+  var omega = 0.011*(1-0.4*Math.cos(theta)) * speedMultiplier;
+  theta += omega;
+  frameHorizontal(); frameVertical();
+  animFrameId = requestAnimationFrame(loop);
+}
+
+if(reduced){
+  phi = Math.PI/4; theta = Math.PI/2.3;
+  frameHorizontal(); frameVertical();
+} else {
+  loop();
+}
+</script>
+</body>
+</html>
